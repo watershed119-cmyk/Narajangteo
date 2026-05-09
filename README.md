@@ -39,13 +39,13 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e .
 
-export NARA_API_KEY="발급받은_일반_인증키"
-export NARA_KEYWORDS="홈페이지,AI,클라우드"
-export EMAIL_TO="recipient@example.com"
+export NARA_API_KEY="4bf226438dd94bee684facc29f0031a26e31b08a7853eaf2b828548b03130c7c"
+export NARA_KEYWORDS="수질,수생태,생태하천,유역,물환경,어도,종적 연결성,횡적 연속성"
+export EMAIL_TO="watershed119@gmail.com"
 export SMTP_HOST="smtp.gmail.com"
 export SMTP_PORT="587"
-export SMTP_USERNAME="sender@example.com"
-export SMTP_PASSWORD="앱_비밀번호"
+export SMTP_USERNAME="watershed119@gmail.com"
+export SMTP_PASSWORD="xmqsthxeqlaudczl"
 
 narajangteo --dry-run  # 이메일 발송 없이 내용 확인
 narajangteo            # 이메일 발송 및 발송 이력 저장
