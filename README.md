@@ -35,18 +35,16 @@
 
 ## 로컬 실행
 
+`.env.example`을 참고해 환경 변수를 준비한 뒤 실행합니다. **실제 키·비밀번호는 `.env` 파일에만 두고 git에 올리지 마세요.** (아래 Docker `--env-file .env` 방식이 가장 간단합니다.)
+
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e .
 
-export NARA_API_KEY="4bf226438dd94bee684facc29f0031a26e31b08a7853eaf2b828548b03130c7c"
-export NARA_KEYWORDS="수질,수생태,생태하천,유역,물환경,어도,종적 연결성,횡적 연속성"
-export EMAIL_TO="watershed119@gmail.com"
-export SMTP_HOST="smtp.gmail.com"
-export SMTP_PORT="587"
-export SMTP_USERNAME="watershed119@gmail.com"
-export SMTP_PASSWORD="xmqsthxeqlaudczl"
+cp .env.example .env          # Windows: copy .env.example .env
+# .env에 실제 값 입력 후, Docker 섹션처럼 --env-file .env 로 실행하거나
+# 셸에 환경 변수를 직접 export/set 한 뒤 narajangteo 실행
 
 narajangteo --dry-run  # 이메일 발송 없이 내용 확인
 narajangteo            # 이메일 발송 및 발송 이력 저장
@@ -87,3 +85,4 @@ docker run --rm --env-file .env -v "$PWD/.state:/app/.state" narajangteo
 - 공고명 검색 파라미터(`bidNtceNm`)를 사용하므로 키워드는 너무 길게 쓰기보다 핵심 명사 위주로 나누는 편이 좋습니다.
 - 공공데이터포털 인증키 오류가 나면 Encoding 키가 아닌 Decoding 키를 `NARA_API_KEY`에 넣었는지 확인하세요.
 - 메일이 스팸함으로 가면 `SMTP_SENDER` 도메인의 SPF/DKIM 설정을 확인하세요.
+- API 키·SMTP 비밀번호는 README나 코드에 넣지 말고 `.env`(로컬) 또는 GitHub Secrets(Actions)에만 보관하세요. 실수로 공개했다면 **즉시 삭제하고 키를 재발급**하세요. README에서 지워도 **과거 git 커밋 기록에는 남을 수 있습니다.**
