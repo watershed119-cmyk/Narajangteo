@@ -1,6 +1,6 @@
 # 나라장터 키워드 입찰공고 이메일 알림
 
-매일 아침 공공데이터포털의 `조달청_나라장터 입찰공고정보서비스`를 호출해 지정한 키워드가 들어간 입찰공고를 모으고, 중복 발송을 제외한 신규 공고를 이메일 요약본으로 보내는 Python 앱입니다.
+매일 아침 공공데이터포털의 `조달청_나라장터 입찰공고정보서비스`를 호출해 지정한 키워드가 들어간 입찰공고를 모으고, 중복 발송을 제외한 **신규 공고가 있을 때만** 이메일 요약본을 보내는 Python 앱입니다.
 
 ## 기능
 
@@ -8,7 +8,8 @@
 - 최근 N일 범위 조회(`LOOKBACK_DAYS`, 기본 1일)
 - 공고번호와 차수 기준 중복 제거 및 발송 이력 저장
 - 텍스트/HTML 이메일 동시 생성
-- 로컬 실행, Docker 실행, GitHub Actions 매일 아침 예약 실행 지원
+- 신규 공고가 있을 때만 이메일 발송 (없으면 메일 생략)
+- 로컬 실행, Docker 실행, GitHub Actions 평일 아침 예약 실행 지원
 
 ## 준비물
 
@@ -60,9 +61,9 @@ docker run --rm --env-file .env -v "$PWD/.state:/app/.state" narajangteo
 
 `STATE_FILE=/app/.state/state.json`처럼 컨테이너 내부의 볼륨 경로를 지정하면 중복 발송 이력을 보존할 수 있습니다.
 
-## GitHub Actions로 매일 아침 실행
+## GitHub Actions로 평일 아침 실행
 
-`.github/workflows/daily-digest.yml`은 매일 07:00 KST(22:00 UTC)에 실행되도록 설정되어 있습니다. 저장소 Secrets에 아래 값을 등록하세요.
+`.github/workflows/daily-digest.yml`은 월~금 07:00 KST(22:00 UTC)에 실행되도록 설정되어 있습니다. 토·일·공휴일에는 자동 실행되지 않습니다. 저장소 Secrets에 아래 값을 등록하세요.
 
 - `NARA_API_KEY`
 - `NARA_KEYWORDS`
@@ -74,6 +75,12 @@ docker run --rm --env-file .env -v "$PWD/.state:/app/.state" narajangteo
 - `SMTP_SENDER`(선택)
 
 > 참고: GitHub Actions의 기본 예시는 저장소 캐시로 발송 이력 파일을 보존합니다. 운영 환경에서는 작은 VPS/서버의 cron 또는 영구 볼륨이 있는 컨테이너 작업을 권장합니다.
+
+### 실행·오류 확인
+
+- **신규 공고 없음**: 메일은 오지 않지만 Actions 실행은 **초록색(성공)** 으로 끝납니다. 로그에 `No new notices; email skipped`가 보입니다.
+- **API/SMTP 오류 등**: Actions 실행이 **빨간색(실패)** 으로 표시됩니다. 저장소 **Actions** 탭에서 해당 실행의 로그를 확인하세요.
+- GitHub **Settings → Notifications**에서 **Actions** 실패 알림을 켜 두면, 메일이 없어도 오류를 이메일로 받을 수 있습니다.
 
 ## 운영 팁
 

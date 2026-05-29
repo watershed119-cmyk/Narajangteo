@@ -3,7 +3,7 @@ name: Daily 나라장터 digest
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 22 * * *" # 07:00 KST
+    - cron: "0 22 * * 1-5" # 월~금 07:00 KST
 
 jobs:
   send-digest:

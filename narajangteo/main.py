@@ -26,6 +26,10 @@ def run_once(*, dry_run: bool = False) -> int:
         print(message.get_body(preferencelist=("plain",)).get_content())
         return 0
 
+    if not new_notices:
+        print("No new notices; email skipped")
+        return 0
+
     send_email(config, message)
     seen.update(notice.identity for notice in new_notices)
     save_seen(config.state_file, seen)
