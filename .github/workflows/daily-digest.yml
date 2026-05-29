@@ -1,0 +1,40 @@
+name: Daily 나라장터 digest
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 22 * * *" # 07:00 KST
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore sent-notice state
+        uses: actions/cache@v4
+        with:
+          path: .state
+          key: narajangteo-state-${{ github.run_id }}
+          restore-keys: |
+            narajangteo-state-
+
+      - name: Install app
+        run: pip install .
+
+      - name: Send digest
+        env:
+          NARA_API_KEY: ${{ secrets.NARA_API_KEY }}
+          NARA_KEYWORDS: ${{ secrets.NARA_KEYWORDS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_SENDER: ${{ secrets.SMTP_SENDER }}
+          STATE_FILE: .state/sent.json
+        run: narajangteo
