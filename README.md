@@ -79,6 +79,7 @@ docker run --rm --env-file .env -v "$PWD/.state:/app/.state" narajangteo
 - **신규 공고 없음**: 메일은 오지 않지만 Actions 실행은 **초록색(성공)** 으로 끝납니다. 로그에 `No new notices; email skipped`가 보입니다.
 - **API/SMTP 오류 등**: Actions 실행이 **빨간색(실패)** 으로 표시됩니다. 저장소 **Actions** 탭에서 해당 실행의 로그를 확인하세요.
 - GitHub **Settings → Notifications**에서 **Actions** 실패 알림을 켜 두면, 메일이 없어도 오류를 이메일로 받을 수 있습니다.
+- 수신 테스트가 필요하면 Actions 수동 실행(`Run workflow`)에서 `force_send_empty=true`로 실행하면 신규 공고가 없어도 테스트 메일을 보낼 수 있습니다.
 
 ## 운영 팁
 

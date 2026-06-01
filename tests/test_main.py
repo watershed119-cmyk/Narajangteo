@@ -77,3 +77,19 @@ def test_run_once_sends_email_when_new_notices_exist(
     mock_send_email.assert_called_once()
     mock_save_seen.assert_called_once()
     assert "Sent 1 new notice(s)" in capsys.readouterr().out
+
+
+@patch("narajangteo.main.load_seen", return_value=set())
+@patch("narajangteo.main.send_email")
+@patch("narajangteo.main.G2BClient")
+@patch("narajangteo.main.load_config")
+def test_run_once_force_sends_email_when_no_new_notices(
+    mock_load_config, mock_client_cls, mock_send_email, mock_load_seen
+):
+    with TemporaryDirectory() as tmp_dir:
+        mock_load_config.return_value = sample_config(Path(tmp_dir) / "state.json")
+        mock_client_cls.return_value.search_recent.return_value = []
+
+        assert run_once(force_send_empty=True) == 0
+
+    mock_send_email.assert_called_once()

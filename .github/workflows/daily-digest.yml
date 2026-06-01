@@ -2,6 +2,12 @@ name: Daily 나라장터 digest
 
 on:
   workflow_dispatch:
+    inputs:
+      force_send_empty:
+        description: Send test email even without new notices
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: "0 22 * * 0-4" # 월~금 07:00 KST (UTC 기준 일~목 22:00)
 
@@ -37,4 +43,9 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_SENDER: ${{ secrets.SMTP_SENDER }}
           STATE_FILE: .state/sent.json
-        run: narajangteo
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force_send_empty }}" = "true" ]; then
+            narajangteo --force-send-empty
+          else
+            narajangteo
+          fi

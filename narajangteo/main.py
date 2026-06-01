@@ -10,7 +10,7 @@ from narajangteo.g2b import G2BClient
 from narajangteo.state import filter_new, load_seen, save_seen
 
 
-def run_once(*, dry_run: bool = False) -> int:
+def run_once(*, dry_run: bool = False, force_send_empty: bool = False) -> int:
     config = load_config()
     client = G2BClient(config.api_key)
     notices = client.search_recent(
@@ -26,7 +26,7 @@ def run_once(*, dry_run: bool = False) -> int:
         print(message.get_body(preferencelist=("plain",)).get_content())
         return 0
 
-    if not new_notices:
+    if not new_notices and not force_send_empty:
         print("No new notices; email skipped")
         return 0
 
@@ -44,10 +44,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--dry-run", action="store_true", help="Print the digest instead of sending email."
     )
+    parser.add_argument(
+        "--force-send-empty",
+        action="store_true",
+        help="Send a test email even when there are no new notices.",
+    )
     args = parser.parse_args(argv)
 
     try:
-        return run_once(dry_run=args.dry_run)
+        return run_once(dry_run=args.dry_run, force_send_empty=args.force_send_empty)
     except Exception as exc:
         print(f"narajangteo failed: {exc}", file=sys.stderr)
         return 1
