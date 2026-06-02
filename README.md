@@ -5,6 +5,7 @@
 ## 기능
 
 - 여러 키워드를 쉼표로 지정해 나라장터 입찰공고 검색
+- 공고명에 포함된 제외 키워드 필터링 (`NARA_EXCLUDE_KEYWORDS`)
 - 최근 N일 범위 조회(`LOOKBACK_DAYS`, 기본 1일)
 - 공고번호와 차수 기준 중복 제거 및 발송 이력 저장
 - 텍스트/HTML 이메일 동시 생성
@@ -22,6 +23,7 @@
 | --- | --- | --- | --- |
 | `NARA_API_KEY` | 예 | `abc123...` | 공공데이터포털 일반 인증키 |
 | `NARA_KEYWORDS` | 예 | `홈페이지,AI,클라우드` | 검색할 입찰공고명 키워드 CSV |
+| `NARA_EXCLUDE_KEYWORDS` | 아니오 | `유지보수,소방,청소` | 공고명에 포함되면 제외할 키워드 CSV |
 | `EMAIL_TO` | 예 | `sales@example.com,ceo@example.com` | 수신자 CSV |
 | `SMTP_HOST` | 예 | `smtp.gmail.com` | SMTP 서버 |
 | `SMTP_PORT` | 아니오 | `587` | 기본값 587 |
@@ -65,6 +67,7 @@ docker run --rm --env-file .env -v "$PWD/.state:/app/.state" narajangteo
 
 - `NARA_API_KEY`
 - `NARA_KEYWORDS`
+- `NARA_EXCLUDE_KEYWORDS` (선택)
 - `EMAIL_TO`
 - `SMTP_HOST`
 - `SMTP_PORT`

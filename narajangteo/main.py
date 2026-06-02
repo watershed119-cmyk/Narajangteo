@@ -10,6 +10,23 @@ from narajangteo.g2b import G2BClient
 from narajangteo.state import filter_new, load_seen, save_seen
 
 
+def _filter_excluded_titles(
+    notices: list, exclude_keywords: tuple[str, ...]
+) -> tuple[list, int]:
+    if not exclude_keywords:
+        return notices, 0
+    excluded = 0
+    filtered = []
+    lowered_keywords = tuple(keyword.lower() for keyword in exclude_keywords)
+    for notice in notices:
+        title = (notice.title or "").lower()
+        if any(keyword in title for keyword in lowered_keywords):
+            excluded += 1
+            continue
+        filtered.append(notice)
+    return filtered, excluded
+
+
 def run_once(*, dry_run: bool = False, force_send_empty: bool = False) -> int:
     config = load_config()
     client = G2BClient(config.api_key)
@@ -20,14 +37,25 @@ def run_once(*, dry_run: bool = False, force_send_empty: bool = False) -> int:
     )
     seen = load_seen(config.state_file)
     new_notices = filter_new(notices, seen)
+    new_notices, excluded_count = _filter_excluded_titles(
+        new_notices, config.exclude_keywords
+    )
     message = build_email(config, new_notices, datetime.now())
 
     if dry_run:
         print(message.get_body(preferencelist=("plain",)).get_content())
+        if excluded_count:
+            print(f"Excluded {excluded_count} notice(s) by NARA_EXCLUDE_KEYWORDS")
         return 0
 
     if not new_notices and not force_send_empty:
-        print("No new notices; email skipped")
+        if excluded_count:
+            print(
+                "No new notices after exclusion; email skipped "
+                f"(excluded={excluded_count})"
+            )
+        else:
+            print("No new notices; email skipped")
         return 0
 
     send_email(config, message)

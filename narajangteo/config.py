@@ -12,6 +12,7 @@ class AppConfig:
     keywords: tuple[str, ...]
     recipients: tuple[str, ...]
     smtp_host: str
+    exclude_keywords: tuple[str, ...] = ()
     smtp_port: int = 587
     smtp_username: str | None = None
     smtp_password: str | None = None
@@ -59,6 +60,7 @@ def load_config() -> AppConfig:
     return AppConfig(
         api_key=api_key,
         keywords=keywords,
+        exclude_keywords=_split_csv(os.getenv("NARA_EXCLUDE_KEYWORDS", "")),
         recipients=recipients,
         smtp_host=smtp_host,
         smtp_port=int(os.getenv("SMTP_PORT", "587")),
